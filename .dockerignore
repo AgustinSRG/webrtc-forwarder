@@ -1,0 +1,17 @@
+# Ignore binaries
+
+webrtc-forwarder.exe
+webrtc-forwarder
+
+# Ignore temp files
+
+temp
+
+# Ignore .env
+
+.env
+*.log
+
+# Ignore doc
+
+doc

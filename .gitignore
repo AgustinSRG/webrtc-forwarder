@@ -1,0 +1,18 @@
+# Binary files
+
+webrtc-forwarder.exe
+webrtc-forwarder
+
+# Ignore temp files
+
+temp
+
+# Ignore .env
+
+.env
+*.log
+*.sdp
+*.bat
+*.mp4
+*.webm
+test.txt
