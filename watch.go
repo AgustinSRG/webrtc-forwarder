@@ -17,13 +17,14 @@ import (
 )
 
 type ProcessOptions struct {
-	portAudio   int
-	portVideo   int
-	sdpFile     string
-	debug       bool
-	ffmpeg      string
-	authToken   string
-	forwardMode string
+	portAudio    int
+	portVideo    int
+	sdpFile      string
+	debug        bool
+	ffmpeg       string
+	authToken    string
+	forwardMode  string
+	forwardParam string
 }
 
 func runProcess(source url.URL, sourceStreamId string, options ProcessOptions) {
@@ -216,8 +217,12 @@ func runProcess(source url.URL, sourceStreamId string, options ProcessOptions) {
 							sdpFile := createForwardSDPFile(options.sdpFile, options.portVideo, options.portAudio)
 							fmt.Println("Tracks received | Created SDP file: " + sdpFile)
 
-							// Publish?
-							// TODO
+							// Publish
+							if options.forwardMode == "CUSTOM" {
+								forwardCustom(options.forwardParam, options.debug)
+							} else if options.forwardMode == "RTMP" {
+								forwardToRTMP(options.ffmpeg, options.sdpFile, options.forwardParam, options.debug)
+							}
 						}
 					})
 

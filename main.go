@@ -39,6 +39,7 @@ func main() {
 	portVideo := 0
 	sdpFile := ""
 	forwardMode := ""
+	forwardParam := ""
 
 	source := ""
 
@@ -151,6 +152,21 @@ func main() {
 		os.Exit(1)
 	}
 
+	if forwardMode == "RTMP" {
+		forwardParam = os.Getenv("RTMP_FORWARD_URL")
+		uSource, err := url.Parse(forwardParam)
+		if err != nil || (uSource.Scheme != "rtmp" && uSource.Scheme != "rtmps") {
+			fmt.Println("Invalid RTMP URL provided. Please set RTMP_FORWARD_URL to a valid URL when usinmg RTMP forward mode.")
+			os.Exit(1)
+		}
+	} else if forwardMode == "CUSTOM" {
+		forwardParam = os.Getenv("CUSTOM_FORWARD_COMMAND")
+		if forwardParam == "" {
+			fmt.Println("Please set CUSTOM_FORWARD_COMMAND when using CUSTOM forward mode.")
+			os.Exit(1)
+		}
+	}
+
 	uSource, err := url.Parse(source)
 	if err != nil || (uSource.Scheme != "ws" && uSource.Scheme != "wss") {
 		fmt.Println("The source is not a valid websocket URL")
@@ -184,13 +200,14 @@ func main() {
 	}
 
 	runProcess(wsURLSource, streamIdSource, ProcessOptions{
-		debug:       debug,
-		portAudio:   portAudio,
-		portVideo:   portVideo,
-		sdpFile:     sdpFile,
-		ffmpeg:      ffmpegPath,
-		forwardMode: forwardMode,
-		authToken:   authToken,
+		debug:        debug,
+		portAudio:    portAudio,
+		portVideo:    portVideo,
+		sdpFile:      sdpFile,
+		ffmpeg:       ffmpegPath,
+		forwardMode:  forwardMode,
+		forwardParam: forwardParam,
+		authToken:    authToken,
 	})
 }
 
@@ -205,10 +222,13 @@ func printHelp() {
 	fmt.Println("        --forward-mode, -fm <MODE>              Forward mode can be: TEST, RTMP or CUSTOM.")
 	fmt.Println("        --video-port, -vp <port>                Sets the port for video packets.")
 	fmt.Println("        --audio-port, -ap <port>                Sets the port for audio packets.")
-
 	fmt.Println("        --ffmpeg-path <path>                    Sets FFMpeg path.")
-	fmt.Println("        --auth, -a <auth-token>                Sets authentication token for the source.")
+	fmt.Println("        --auth, -a <auth-token>                 Sets authentication token for the source.")
 	fmt.Println("        --secret, -s <secret>                   Sets secret to generate authentication tokens.")
+	fmt.Println("    FORWARD MODES:")
+	fmt.Println("        --forward-mode TEST                     Creates the SDP file and does nothing else. For testing.")
+	fmt.Println("        --forward-mode RTMP                     Forwards the RTC stream to RTMP. Set RTMP_FORWARD_URL env variable.")
+	fmt.Println("        --forward-mode CUSTOM                   Runs a custom command to forward the stream. Set CUSTOM_FORWARD_COMMAND env variable.")
 }
 
 func printVersion() {
