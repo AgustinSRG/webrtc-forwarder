@@ -236,11 +236,5 @@ func printVersion() {
 }
 
 func killProcess() {
-	proc, err := os.FindProcess(os.Getpid())
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	proc.Signal(os.Interrupt)
 	os.Exit(0)
 }
