@@ -234,7 +234,3 @@ func printHelp() {
 func printVersion() {
 	fmt.Println("webrtc-forwarder 1.0.0")
 }
-
-func killProcess() {
-	os.Exit(0)
-}

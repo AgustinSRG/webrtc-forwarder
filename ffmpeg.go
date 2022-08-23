@@ -7,7 +7,37 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 )
+
+var (
+	forward_lock *sync.Mutex
+	forward_proc *os.Process
+)
+
+func initForward() {
+	forward_lock = &sync.Mutex{}
+	forward_proc = nil
+}
+
+func setProcess(p *os.Process) {
+	forward_lock.Lock()
+	defer forward_lock.Unlock()
+
+	forward_proc = p
+}
+
+func killProcess() {
+	forward_lock.Lock()
+	defer forward_lock.Unlock()
+
+	if forward_proc != nil {
+		forward_proc.Kill()
+		forward_proc = nil
+	}
+
+	os.Exit(0)
+}
 
 func forwardToRTMP(ffmpegBin string, source string, rtmpURL string, debug bool) {
 	args := make([]string, 1)
@@ -32,12 +62,23 @@ func forwardToRTMP(ffmpegBin string, source string, rtmpURL string, debug bool) 
 		fmt.Println("Running command: " + cmd.String())
 	}
 
-	err := cmd.Run()
+	err := cmd.Start()
 
 	if err != nil {
 		fmt.Println("Error: ffmpeg program failed: " + err.Error())
 		os.Exit(1)
 	}
+
+	setProcess(cmd.Process)
+
+	err = cmd.Wait()
+
+	if err != nil {
+		fmt.Println("Error: ffmpeg program failed: " + err.Error())
+		os.Exit(1)
+	}
+
+	setProcess(nil)
 
 	os.Exit(0)
 }
@@ -58,12 +99,23 @@ func forwardCustom(customCommand string, debug bool) {
 		fmt.Println("Running command: " + cmd.String())
 	}
 
-	err := cmd.Run()
+	err := cmd.Start()
 
 	if err != nil {
 		fmt.Println("Error: ffmpeg program failed: " + err.Error())
 		os.Exit(1)
 	}
+
+	setProcess(cmd.Process)
+
+	err = cmd.Wait()
+
+	if err != nil {
+		fmt.Println("Error: ffmpeg program failed: " + err.Error())
+		os.Exit(1)
+	}
+
+	setProcess(nil)
 
 	os.Exit(0)
 }
