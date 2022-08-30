@@ -8,6 +8,8 @@ import (
 	"os/exec"
 	"strings"
 	"sync"
+
+	child_process_manager "github.com/AgustinSRG/go-child-process-manager"
 )
 
 var (
@@ -62,12 +64,16 @@ func forwardToRTMP(ffmpegBin string, source string, rtmpURL string, debug bool) 
 		fmt.Println("Running command: " + cmd.String())
 	}
 
+	child_process_manager.ConfigureCommand(cmd)
+
 	err := cmd.Start()
 
 	if err != nil {
 		fmt.Println("Error: ffmpeg program failed: " + err.Error())
 		os.Exit(1)
 	}
+
+	child_process_manager.AddChildProcess(cmd.Process)
 
 	setProcess(cmd.Process)
 
@@ -99,12 +105,16 @@ func forwardCustom(customCommand string, debug bool) {
 		fmt.Println("Running command: " + cmd.String())
 	}
 
+	child_process_manager.ConfigureCommand(cmd)
+
 	err := cmd.Start()
 
 	if err != nil {
 		fmt.Println("Error: ffmpeg program failed: " + err.Error())
 		os.Exit(1)
 	}
+
+	child_process_manager.AddChildProcess(cmd.Process)
 
 	setProcess(cmd.Process)
 

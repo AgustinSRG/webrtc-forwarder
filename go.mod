@@ -3,6 +3,7 @@ module github.com/AgustinSRG/webrtc-forwarder
 go 1.17
 
 require (
+	github.com/AgustinSRG/go-child-process-manager v0.0.0-20220826120208-90beebb5df94
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/gorilla/websocket v1.5.0
 	github.com/pion/interceptor v0.1.11
@@ -28,5 +29,5 @@ require (
 	github.com/pion/udp v0.1.1 // indirect
 	golang.org/x/crypto v0.0.0-20220622213112-05595931fe9d // indirect
 	golang.org/x/net v0.0.0-20220708220712-1185a9018129 // indirect
-	golang.org/x/sys v0.0.0-20220712014510-0a85c31ab51e // indirect
+	golang.org/x/sys v0.0.0-20220825204002-c680a09ffe64 // indirect
 )
